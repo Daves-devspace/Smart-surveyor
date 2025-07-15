@@ -37,23 +37,33 @@ This system digitizes the land surveying workflow by integrating:
 
 surveyor/
 │
+
 ├── models.py # LayoutProject, SurveyorPoint
+
 ├── views.py # All CBVs for project handling
+
 ├── urls.py # URL routing
+
 ├── templates/
+
 │ ├── project_map_mobile.html
+
 │ ├── performance_report.html
+
 │ ├── project_dashboard.html
+
 │ └── pdf_template.html
+
 ├── static/
+
 │ └── JS/CSS assets
+
 ├── utils/
+
 │ └── ai_layout_generator.py
+
 │ └── haversine.py
 
-yaml
-Copy
-Edit
 
 ---
 
@@ -165,9 +175,7 @@ Aggregate views calculate:
 pip install django weasyprint qrcode idb-keyval
 sudo apt install chromium-driver
 ⚙️ Run
-bash
-Copy
-Edit
+
 python manage.py migrate
 python manage.py runserver
 📥 Future Enhancements
@@ -192,4 +200,4 @@ SDG 8: Decent Work and Economic Growth	Empowers local surveyors with digital too
 📧 Contact & Credits
 Developed by: [David Maina]
 Contact: [info@liorixdigital.com]
-GitHub: [github.com/yourrepo]
+GitHub: [(https://github.com/Daves-devspace/Smart-surveyor.git)]
