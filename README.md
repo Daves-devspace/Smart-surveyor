@@ -202,4 +202,7 @@ Developed by: [David Maina]
 Contact: [info@liorixdigital.com]
 GitHub: [(https://github.com/Daves-devspace/Smart-surveyor.git)]
 
-Ready for the field, ready for launch 🚀
+ Ready for the field, ready for launch 🚀
+
+“Digitizing the land, empowering the hands.” 🌍📐🛰️
+
