@@ -201,3 +201,5 @@ SDG 8: Decent Work and Economic Growth	Empowers local surveyors with digital too
 Developed by: [David Maina]
 Contact: [info@liorixdigital.com]
 GitHub: [(https://github.com/Daves-devspace/Smart-surveyor.git)]
+
+Ready for the field, ready for launch 🚀
