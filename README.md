@@ -190,6 +190,6 @@ SDG 11: Sustainable Cities and Communities	Helps ensure well-planned subdivision
 SDG 8: Decent Work and Economic Growth	Empowers local surveyors with digital tools and trackable performance
 
 📧 Contact & Credits
-Developed by: [Your Name / Team]
-Contact: [your-email@example.com]
+Developed by: [David Maina]
+Contact: [info@liorixdigital.com]
 GitHub: [github.com/yourrepo]
