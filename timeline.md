@@ -115,7 +115,9 @@ This document outlines a structured 7-day timeline to build and deploy the **Sma
 📧 Contact & Credits
 
 Developed by: [David Maina]
+
 Contact: [info@liorixdigital.com]
+
 GitHub: [(https://github.com/Daves-devspace/Smart-surveyor.git)]
 
 > “Digitizing the land. Empowering the hands.” 🌍📐🛰️
