@@ -112,9 +112,11 @@ This document outlines a structured 7-day timeline to build and deploy the **Sma
 
 ## 👥 Team & Credits
 
-Developed by: *[Your Name or Team]*  
-Email: *[yourname@example.com]*  
-GitHub: [github.com/yourusername/smart-surveyor](https://github.com/yourusername/smart-surveyor)
+📧 Contact & Credits
+
+Developed by: [David Maina]
+Contact: [info@liorixdigital.com]
+GitHub: [(https://github.com/Daves-devspace/Smart-surveyor.git)]
 
 > “Digitizing the land. Empowering the hands.” 🌍📐🛰️
 
