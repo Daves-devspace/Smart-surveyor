@@ -1,266 +1,163 @@
-# Next‑Gen Surveyor Platform: Feature Breakdown & Implementation Guide
+# Surveyor Mutation Automation Tool - Documentation
 
-This document outlines the **key features** of a web‑based surveying platform tailored for Kenyan land services requiring mutation forms (per Kenya Lands Authority standards). For each feature, it details:
+## Overview
 
-* **Surveyor workflow**
-* **Implementation approach** (backend, frontend, libraries)
-* **AI/ML responsibilities**
+This tool is designed to automate and visualize the land subdivision and mutation process for certified surveyors in Kenya. It utilizes real-time satellite mapping, accurate field coordinates, and AI logic to speed up mutation drawing aligned with land registry requirements.
 
 ---
 
-## Table of Contents
+## 🎯 Goals
 
-1. [Survey Request & Client Intake](#1-survey-request--client-intake)
-2. [Coordinate Upload & Validation](#2-coordinate-upload--validation)
-3. [Boundary Generation & AI‑Driven Correction](#3-boundary-generation--ai-driven-correction)
-4. [Area & Perimeter Calculation](#4-area--perimeter-calculation)
-5. [Subdivision Modes (Manual & Auto)](#5-subdivision-modes-manual--auto)
-6. [Road Buffer Planning](#6-road-buffer-planning)
-7. [Interactive Map Visualization](#7-interactive-map-visualization)
-8. [Anomaly & Compliance Checking](#8-anomaly--compliance-checking)
-9. [Mutation Form Generation & KLA Compliance](#9-mutation-form-generation--kla-compliance)
-10. [Admin Review & Submission](#10-admin-review--submission)
-11. [Technical Stack & Architecture](#11-technical-stack--architecture)
-12. [AI/ML Models & Pipelines](#12-aiml-models--pipelines)
+* Streamline the mutation drawing process.
+* Accurately visualize real parcels on satellite maps.
+* Provide auto-subdivision tools with intelligent plot arrangements.
+* Minimize errors in beacon coordinate calculation.
+* Align with Kenyan Land Authority practices.
 
 ---
 
-## 1. Survey Request & Client Intake
+## 🌍 Aligned SDGs
 
-**Workflow**:
-
-1. Client registers or logs in.
-2. Client fills a `Survey Request Form` with details:
-
-   * Parcel location (county, ward)
-   * Title deed number
-   * Requested service (subdivision, transfer, boundary re‑survey)
-   * Contact information
-3. Request stored in `LandRequest` model; surveyor sees new jobs on dashboard.
-
-**Implementation**:
-
-* **Django Models**: `LandRequest` (fields: client, deed\_number, service\_type, status)
-* **Views/Forms**: `SurveyRequestForm`, `request_list_view`, `request_detail_view`
-* **Templates**: Bootstrap form with validation
-
-**AI Role**:
-
-* **Optional OCR**: Use Tesseract OCR to auto‑extract deed number and owner info if client uploads scanned deed.
+* **SDG 9:** Industry, Innovation, and Infrastructure
+* **SDG 11:** Sustainable Cities and Communities
+* **SDG 16:** Peace, Justice, and Strong Institutions
 
 ---
 
-## 2. Coordinate Upload & Validation
+## 📌 Key Features
 
-**Workflow**:
+### 1. Coordinate Upload Form
 
-1. Surveyor selects a `LandRequest`.
-2. Uploads boundary coordinates via CSV or manual map digitization.
-3. System validates format and ensures coordinates form a valid polygon.
+* **Function:** Allow surveyor to upload raw GPS coordinates from total station.
+* **Fields:** File input (CSV, XLS), Manual entry, Client reference
+* **AI:** Auto-validate coordinate format and field boundaries
 
-**Implementation**:
+### 2. Visualize Actual Parcel on Map
 
-* **Django Model**: `LandParcel` (fields: request, coordinates (GeoJSON), uploaded\_at)
-* **Backend**: Use `GeoPandas`/`Shapely` to parse CSV → `Polygon` object; raise errors for invalid geometries.
-* **Frontend**: File input or Leaflet.js drawing tool for manual entry.
+* **Function:** Parse uploaded coordinates and plot parcel on satellite map (Leaflet/Google Maps)
+* **Feature:** Zoom, rotate, adjust beacon positions
+* **AI Role:** Detect irregular shapes and flag corrections
 
-**AI Role**:
+### 3. Auto Boundary and Area Calculation
 
-* **Geo‑Validation**: Lightweight ML (e.g., Isolation Forest) to detect outlier points that break polygon validity (spikes, self‑intersections).
+* **Function:** Automatically calculate polygon area and draw boundary lines
+* **Method:** GIS polygon algorithms
+* **AI:** Detect errors, duplicate points, and overlaps
 
----
+### 4. Manual or Auto Mutation Drawing
 
-## 3. Boundary Generation & AI‑Driven Correction
+* **Modes:**
 
-**Workflow**:
+  * Manual Drawing with snapping and drag tools
+  * Auto Drawing (choose by number of plots or dimensions)
 
-1. System auto‑draws boundary on map from uploaded coordinates.
-2. AI suggests corrections (straightening minor deviations, closing gaps).
-3. Surveyor accepts or rejects AI suggestions.
+* **Input Fields (Auto):**
 
-**Implementation**:
+  * Number of plots
+  * Plot size (e.g., 50x100)
+  * Road width & position (center, left, right, both)
+  * Setbacks (default or custom)
 
-* **Backend**: `Shapely.simplify()` for initial smoothing.
-* **Frontend**: Map overlay with draggable vertices.
+* **AI Role:**
 
-**AI Role**:
+  * Optimize plot layout
+  * Calculate & distribute reminder
+  * Detect irregularities
 
-* **Segmentation Model** (e.g., U-Net): If aerial imagery available, segment likely fence lines and align boundary to physical features.
-* **Output**: Suggested vertex adjustments.
+### 5. Auto Beacon Coordinate Generation
 
----
+* **Function:** Assign accurate beacon coordinates to each sub-parcel
+* **Method:** Compute from total station coordinate system
+* **AI:** Validate and reproject if necessary
 
-## 4. Area & Perimeter Calculation
+### 6. Export Options
 
-**Workflow**:
+* **Format:** PDF (mutation form view), CSV (coordinate list), KML (Google Earth)
+* **Includes:**
 
-* After boundary confirmation, system calculates:
-
-  * Total area (sqm/acres)
-  * Perimeter length
-  * Returns results to surveyor
-
-**Implementation**:
-
-* **Backend**: `polygon.area` and `polygon.length` from `Shapely` or `GeoPandas`.
-* **Frontend**: Display in dashboard card and map tooltip.
-
-**AI Role**:
-
-* **None** (pure geospatial calculation).
+  * Map
+  * Beacon coordinates
+  * Plot layout info
 
 ---
 
-## 5. Subdivision Modes (Manual & Auto)
+## 📂 Developer Implementation Guide
 
-**Workflow**:
+### Tech Stack
 
-* Surveyor chooses:
+* **Backend:** Django (REST API)
+* **Frontend:** Bootstrap + JS + Leaflet.js / Google Maps
+* **AI/ML:** Python (scikit-learn or custom logic), Turf.js (GIS calculations)
 
-  * **Manual**: Upload list of plot dimensions (e.g., 50×100 ft), count, and sequence.
-  * **Auto**: Specify uniform plot size or number of plots → system auto‑divides polygon.
+### Models
 
-**Implementation**:
+* `Client`
+* `CoordinateSet`
+* `Plot`
+* `MutationPlan`
 
-* **Backend**:
+### API Endpoints
 
-  * **Manual**: Read JSON list → for each, generate rectangle `Polygon` within boundary via custom placement algorithm.
-  * **Auto**: Grid‑slice method: subdivide bounding box then clip by original polygon.
-* **Libraries**: `Shapely`, `GeoPandas` for geometry splitting.
+* `POST /upload-coordinates`
+* `GET /parcel/:id/map-view`
+* `POST /mutation/auto`
+* `POST /mutation/manual`
+* `GET /plot/:id/export`
 
-**AI Role**:
+### AI Models
 
-* **Optimization**: Use reinforcement learning (RL) or heuristic GA algorithm to optimize plot placement for minimal waste and equal access.
+* **Plot Arrangement Optimizer:**
 
----
+  * Input: Polygon, plot size, road width
+  * Output: Grid layout
+  * Tools: Custom algorithm / Turf.js
 
-## 6. Road Buffer Planning
+* **Anomaly Detector:**
 
-**Workflow**:
+  * Detect overlaps, invalid geometry
 
-* Surveyor enters road width and side (left/right/both/center).
-* System applies buffer lines to subdivided plots.
+### Key Logic
 
-**Implementation**:
+* **Subdivision Algorithm:** Grid-fitting inside polygon with margin and road cuts.
+* **Beacon Generator:** Traverse each parcel and compute new beacon corners.
+* **Reminder Allocation:**
 
-* **Backend**: `PlotPolygon.buffer(-road_width/2)` to carve road through polygon, generating new geometry for each side.
-* **Frontend**: Toggle control and width slider.
-
-**AI Role**:
-
-* **Anomaly Detection**: Flag roads that cross steep slopes beyond safe limits (requires DEM data & slope analysis ML).
-
----
-
-## 7. Interactive Map Visualization
-
-**Workflow**:
-
-* All geometries (boundary, plots, roads) rendered as GeoJSON layers.
-* Plot popups show area, dimensions, plot ID.
-
-**Implementation**:
-
-* **Frontend**: Leaflet.js with vector layers; controls for toggle layers.
-* **Styles**: Bootstrap modals for plot detail editing.
-
-**AI Role**:
-
-* **None** (visualization only).
+  * Auto-detect smallest area and allocate reminder
+  * Or allow surveyor to pick target plot
 
 ---
 
-## 8. Anomaly & Compliance Checking
+## 🛠️ Future Enhancements
 
-**Workflow**:
-
-* System checks:
-
-  * Overlaps between plots
-  * Minimum plot area per KLA regs
-  * Buffer zone compliance (e.g., road setbacks)
-* Flags violations in dashboard.
-
-**Implementation**:
-
-* **Backend**: Validate with `Shapely.intersects()`, area thresholds from config file.
-* **Frontend**: Highlight offending polygons in red.
-
-**AI Role**:
-
-* **Encroachment Detection**: Clustering algorithms (DBSCAN) on point clouds or plot centroids to find irregular clusters signifying potential encroachments.
+* Client portal to track mutation progress
+* Mutation plan validation against Land Authority records
+* Mobile field app with offline mode
 
 ---
 
-## 9. Mutation Form Generation & KLA Compliance
+## ✅ Outcome
 
-**Workflow**:
+Surveyors will be able to:
 
-* Upon approval, system compiles data into official Mutation Form (Form 3A) per KLA template:
-
-  * Surveyor details, landowner details, deed number
-  * Original parcel size & subdivided plot details
-  * Table of new plot areas and IDs
-  * Date, location, signatures
-* Generates PDF for download or direct submission.
-
-**Implementation**:
-
-* **Library**: `WeasyPrint` or `ReportLab`
-* **Template**: HTML/CSS mimicking KLA form layout.
-* **Django View**: `generate_mutation_pdf(request, parcel_id)` returns PDF response.
-
-**AI Role**:
-
-* **OCR Auto‑Fill**: If client uploads partial forms, use OCR to pre‑populate fields.
+* Automate subdivision in seconds
+* Visualize and print mutations aligned with real maps
+* Export ready-to-submit documents
+* Reduce human error and time consumption drastically
 
 ---
 
-## 10. Admin Review & Submission
+## 👥 Target Market
 
-**Workflow**:
-
-* Admin views pending mutation PDFs.
-* Can approve or request edits.
-* On approval, system:
-
-  * Marks `LandRequest.status = 'Completed'`
-  * (Optional) Calls Ardhisasa API to submit digital mutation application.
-
-**Implementation**:
-
-* **Django Admin** or custom dashboard.
-* **APIs**: Integrate with Ardhisasa REST endpoints for mutation submission.
-
-**AI Role**:
-
-* **Approval Assistant**: NLP model to auto‑flag inconsistent entries (e.g., mismatched areas vs. table sum).
+* Licensed Land Surveyors
+* Land Consultancy Firms
+* County Governments / Ministry of Lands
 
 ---
 
-## 11. Technical Stack & Architecture
+## 👨‍💻 Contributions
 
-* **Backend**: Django + Django REST Framework
-* **Database**: PostgreSQL + PostGIS
-* **Frontend**: Bootstrap 5, Leaflet.js, Vanilla JS or React for map component
-* **Geospatial**: GeoPandas, Shapely, Fiona
-* **AI/ML**: PyTorch or TensorFlow, Scikit‑learn
-* **PDF**: WeasyPrint / ReportLab
-* **Async Tasks**: Celery + Redis
-* **Deployment**: Docker, AWS ECS or DigitalOcean
+Feel free to fork, contribute, or raise issues via the project repository.
 
 ---
 
-## 12. AI/ML Models & Pipelines
-
-| Module              | Model                    | Purpose                                        | Data              | Free/Open Source |
-| ------------------- | ------------------------ | ---------------------------------------------- | ----------------- | ---------------- |
-| Boundary Correction | U-Net / Mask R‑CNN       | Segment physical boundaries from aerial images | Drone orthomosaic | ✅                |
-| Outlier Detection   | Isolation Forest         | Identify invalid coordinate spikes             | Coordinate CSV    | ✅                |
-| Plot Optimization   | Genetic Algorithm (DEAP) | Optimize plot placement for minimal waste      | Parcel polygons   | ✅                |
-| Encroachment Check  | DBSCAN                   | Detect clusters of overlapping plots           | Plot geometries   | ✅                |
-| OCR Form Fill       | Tesseract OCR            | Extract text from scanned forms                | Form scans        | ✅                |
-
----
-
-*This guide equips developers and surveyors with a clear roadmap to build an AI‑enhanced, Django‑powered surveying platform that automates subdivision, compliance checks, and mutation form generation—fully aligned with Kenya Lands Authority requirements.*
+> 📍 All logic aligns with guidelines from the Survey of Kenya and Ministry of Lands mutation practices.
