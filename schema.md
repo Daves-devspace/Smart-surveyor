@@ -125,7 +125,7 @@ Tracks final placement of mutation drawing into the PDF form.
    - **Save Preferences** → status becomes **in_progress**.
 
 5. **AI Layout Generation**
-   - Click **“Generate AI Layout”** → creates a `MutationOutput` with:
+   - Click **“Create project”** → creates a `MutationOutput` with:
      - `geojson_layout`
      - `preview_image`
      - `suggested_roads` (array of {centerline, width_ft})
